@@ -76,7 +76,12 @@ open class AutocompleteManager: NSObject, InputPlugin, UITextViewDelegate, UITab
     /// Adds an additional space after the autocompleted text when true.
     /// Default value is `TRUE`
     open var appendSpaceOnCompletion = true
-    
+
+    open var maximumCharacterLimit = 300
+    open var textViewDidChange: ((_ text: String) -> Void)?
+    open var textViewDidEndEditing: (() -> Void)?
+    open var textViewDidBeginEditing: (() -> Void)?
+
     /// Keeps the prefix typed when text is autocompleted.
     /// Default value is `TRUE`
     open var keepPrefixOnCompletion = true
@@ -113,6 +118,7 @@ open class AutocompleteManager: NSObject, InputPlugin, UITextViewDelegate, UITab
         let style = NSMutableParagraphStyle()
         style.paragraphSpacingBefore = 2
         style.lineHeightMultiple = 1
+        style.lineSpacing = 8
         return style
     }()
 
@@ -154,7 +160,7 @@ open class AutocompleteManager: NSObject, InputPlugin, UITextViewDelegate, UITab
             return filterBlock(session, completion)
         }
     }
-    
+
     // MARK: - Initialization
     
     public init(for textView: UITextView) {
@@ -409,10 +415,26 @@ open class AutocompleteManager: NSObject, InputPlugin, UITextViewDelegate, UITab
     
     public func textViewDidChange(_ textView: UITextView) {
         reloadData()
+        textViewDidChange?(textView.text ?? "")
+    }
+
+    public func textViewDidEndEditing(_ textView: UITextView) {
+        textViewDidEndEditing?()
+    }
+
+    public func textViewDidBeginEditing(_ textView: UITextView) {
+        textViewDidBeginEditing?()
     }
     
-    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        
+    open func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+
+        let currentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
+        guard updatedText.count <= maximumCharacterLimit else {
+            return false
+        }
+
         // Ensure that the text to be inserted is not using previous attributes
         preserveTypingAttributes()
         
