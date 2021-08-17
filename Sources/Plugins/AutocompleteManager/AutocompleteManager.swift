@@ -118,7 +118,7 @@ open class AutocompleteManager: NSObject, InputPlugin, UITextViewDelegate, UITab
         let style = NSMutableParagraphStyle()
         style.paragraphSpacingBefore = 2
         style.lineHeightMultiple = 1
-        style.lineSpacing = 5
+        style.lineSpacing = 4
         return style
     }()
 
@@ -431,16 +431,16 @@ open class AutocompleteManager: NSObject, InputPlugin, UITextViewDelegate, UITab
         let currentText = textView.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = 5
-        let attr = [
-            NSAttributedString.Key.paragraphStyle: style,
-            NSAttributedString.Key.kern: 2
-        ] as [NSAttributedString.Key : Any]
+//        let style = NSMutableParagraphStyle()
+//        style.lineSpacing = 5
+//        let attr = [
+//            NSAttributedString.Key.paragraphStyle: style,
+//            NSAttributedString.Key.kern: 2
+//        ] as [NSAttributedString.Key : Any]
         guard updatedText.count <= maximumCharacterLimit else {
             return false
         }
-        textView.attributedText = NSAttributedString(string: updatedText, attributes: attr)
+//        textView.attributedText = NSAttributedString(string: updatedText, attributes: attr)
 
         // Ensure that the text to be inserted is not using previous attributes
         preserveTypingAttributes()
