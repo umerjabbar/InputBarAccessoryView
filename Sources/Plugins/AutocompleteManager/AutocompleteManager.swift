@@ -118,7 +118,7 @@ open class AutocompleteManager: NSObject, InputPlugin, UITextViewDelegate, UITab
         let style = NSMutableParagraphStyle()
         style.paragraphSpacingBefore = 2
         style.lineHeightMultiple = 1
-        style.lineSpacing = 4
+        style.lineSpacing = 6
         return style
     }()
 
